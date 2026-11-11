@@ -32,6 +32,8 @@ for all to authenticated
 using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 grant select, insert, update, delete on public.docs to authenticated;
+-- Sauvegarde nocturne et restauration (clé secrète du Mac mini, voir docs/DEPLOIEMENT.md §5).
+grant select, insert, update on public.docs to service_role;
 
 -- ---------------------------------------------------------------------------
 -- Banque d'exercices COMMUNE (ajouts partagés entre tous les utilisateurs).
@@ -65,3 +67,5 @@ create policy "Banque : suppression par l'auteur" on public.bank
 for delete to authenticated using (created_by = auth.uid());
 
 grant select, insert, update, delete on public.bank to authenticated;
+-- Sauvegarde nocturne et restauration (clé secrète du Mac mini, voir docs/DEPLOIEMENT.md §5).
+grant select, insert, update on public.bank to service_role;

@@ -8,6 +8,10 @@ Coche les cases au fur et à mesure (et ajoute une ligne au journal de `docs/SPE
 
 ## Reprise : où on en est (mis à jour le 2026-11-11)
 
+- **EN PRODUCTION depuis le 2026-11-11 : v2.0.0** (`master` = `sync-supabase`, commit 9ac47d2). Supabase nettoyé par Antoine (comptes de test supprimés, catalogue vidé).
+- **Reste à faire, dans l'ordre** : (1) les 3 utilisateurs créent leur compte par pseudo depuis leur téléphone ; (2) fermer les inscriptions dans Supabase ; (3) supprimer le dépôt de test et retirer son adresse des Redirect URLs (ou le garder pour les prochaines évolutions : à décider avec Antoine) ; (4) sauvegarde nocturne sur le Mac mini (étape 3) ; (5) ajustements Android.
+- Désormais : toute évolution se fait sur une branche, se publie d'abord en test, puis en production avec le feu vert explicite d'Antoine.
+
 - **Branche de travail** : `sync-supabase` (rien n'est sur `master` / production). Version de test publiée : **v1.16.0-sync** sur https://antoinem13.github.io/carnet-muscu-test/
 - **Publier en test** : tests + `node tools/check-sw.mjs` + incrémenter `VERSION` (sw.js), commit, puis `git push test sync-supabase:main` (remote `test` = dépôt `AntoineM13/carnet-muscu-test`, GitHub Pages sur `main`). Vérifier le build : `gh api repos/AntoineM13/carnet-muscu-test/pages/builds/latest --jq .status`.
 - **Tester dans un navigateur sans Supabase** : `tools/dev-server.mjs` (faux Supabase + app, voir l'en-tête du fichier).

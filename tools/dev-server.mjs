@@ -30,6 +30,7 @@ http.createServer(async (req, res) => {
   if (u.pathname === '/auth/v1/logout') return j(204);
   if (u.pathname === '/auth/v1/signup') return process.env.NO_SIGNUP ? j(422, { code: 422, error_code: 'signup_disabled', msg: 'Signups not allowed for this instance' }) : j(200, { access_token: 'tok', refresh_token: 'r', expires_in: 3600, user: { id: 'u1', email: JSON.parse(body).email } });
   if (u.pathname === '/auth/v1/user' && req.method === 'PUT') { console.log('PASSWORD CHANGED'); return j(200, { id: 'u1' }); }
+  if (u.pathname === '/rest/v1/bank') return j(200, req.method === 'GET' ? [] : undefined);
   if (u.pathname === '/rest/v1/docs') {
     console.log(new Date().toISOString().slice(11,19), req.method, req.method === 'POST' ? JSON.parse(body).map(r => r.collection + '/' + r.id).join(',') : (u.searchParams.get('or') ? 'pull(cursor)' : 'pull(all)'));
     if (req.method === 'POST') { for (const r of JSON.parse(body)) rows.set(r.collection + '/' + r.id, { ...r, updated_at: new Date(++clock).toISOString() }); return j(201); }
@@ -37,7 +38,8 @@ http.createServer(async (req, res) => {
     if (or) { const m = [...or.matchAll(/"([^"]*)"/g)].map(x => x[1]); t = m[0]; c = m[2]; i = m[5]; }
     const all = [...rows.values()].sort((a, b) => a.updated_at.localeCompare(b.updated_at) || a.collection.localeCompare(b.collection) || a.id.localeCompare(b.id))
       .filter(r => !or || r.updated_at > t || (r.updated_at === t && (r.collection > c || (r.collection === c && r.id > i))));
-    return j(200, all.slice(0, +u.searchParams.get('limit') || 1000));
+    const off = +u.searchParams.get('offset') || 0;
+    return j(200, all.slice(off, off + (+u.searchParams.get('limit') || 1000)).map((r) => ({ user_id: r.user_id || 'u1', deleted: false, ...r })));
   }
   if (u.pathname === '/__inject') { const r = JSON.parse(body); rows.set(r.collection + '/' + r.id, { ...r, updated_at: new Date(++clock).toISOString() }); console.log('INJECT', r.id); return j(200, {}); }
   if (u.pathname === '/__has') return j(200, rows.has(u.searchParams.get('k')));

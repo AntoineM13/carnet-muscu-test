@@ -117,6 +117,29 @@ On ne peut **jamais lire** un mot de passe : on en met un provisoire, sans touch
 3. Donner le mot de passe provisoire ; la personne se connecte puis le change dans Réglages → Compte.
 4. Ne **pas** supprimer le compte : ses données en ligne partiraient avec.
 
+## 5. Sauvegarde nocturne de Supabase (Mac mini)
+
+Le plan gratuit Supabase ne sauvegarde rien. Chaque nuit à 3 h, le Mac mini copie toute la base dans `~/Sauvegardes/carnet-muscu/carnet-muscu-AAAA-MM-JJ.json` (30 derniers jours gardés). Si le Mac dort à 3 h, la copie se fait à son réveil. Journal : `~/Sauvegardes/carnet-muscu/backup.log`.
+
+Scripts : `tools/backup/` (Python 3 du Mac, rien à installer).
+
+### Installation (une fois)
+1. **Clé secrète** : Supabase → **Project Settings** → **API Keys** → section **Secret keys** → copier la clé `sb_secret_…` (en créer une si besoin, nom : `backup-mac-mini`). Elle donne accès à TOUT : ne jamais la coller ailleurs que dans le Trousseau.
+2. Ouvrir l'app **Terminal** du Mac et taper :
+   `security add-generic-password -s carnet-muscu-supabase -a backup -w`
+   puis coller la clé quand il le demande (rien ne s'affiche, c'est normal), Entrée, recoller, Entrée.
+3. Installer la tâche : `bash tools/backup/install.sh` (depuis le dossier du projet).
+4. Tester tout de suite : `launchctl kickstart gui/$(id -u)/fr.carnetmuscu.backup`, puis lire `~/Sauvegardes/carnet-muscu/backup.log` (ligne « OK … »).
+
+### Vérifier que ça tourne
+- `tail ~/Sauvegardes/carnet-muscu/backup.log` : une ligne « OK » par jour.
+- Changer de clé : `security delete-generic-password -s carnet-muscu-supabase -a backup`, puis refaire l'étape 2.
+- Désinstaller : `launchctl bootout gui/$(id -u)/fr.carnetmuscu.backup` et supprimer `~/Library/LaunchAgents/fr.carnetmuscu.backup.plist`.
+
+### Restaurer (en cas de problème, de préférence avec Claude)
+1. Aperçu, sans rien modifier : `python3 tools/backup/restore-supabase.py ~/Sauvegardes/carnet-muscu/carnet-muscu-AAAA-MM-JJ.json` (liste les comptes et leurs séances).
+2. Restaurer un compte : ajouter `--user <id du compte> --apply`, puis taper `RESTAURER`. Les lignes reprennent leur état de la sauvegarde ; les téléphones les reçoivent à la prochaine synchro.
+
 ## Pour aller plus loin
 
 - Modifier le programme de départ (avant de le partager, par exemple) : `js/data/seed-program.js`.

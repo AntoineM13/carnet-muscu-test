@@ -67,7 +67,9 @@ Antoine a des retours d'usage à transmettre. Les traiter **sur la branche `sync
 ## Étape 3 : sauvegarde nocturne sur le Mac mini
 But : le plan gratuit Supabase n'a pas de sauvegarde automatique. Chaque nuit, une copie de toute la table `docs` est enregistrée sur le Mac mini.
 
-Conception proposée (sans dépendance à installer) :
+**Codé le 2026-11-11** (`tools/backup/` : `backup-supabase.py`, `restore-supabase.py`, `install.sh`), testé contre le faux Supabase (pagination, aperçu, restauration d'un compte). Mode d'emploi : `docs/DEPLOIEMENT.md` §5. Reste : Antoine range la clé secrète dans le Trousseau, puis installation et premier essai réel. Différences avec la conception : sauvegarde aussi le catalogue (`bank`), script copié dans `~/Library/Application Support/carnet-muscu` (macOS interdit à une tâche planifiée de lire `~/Documents`).
+
+Conception d'origine :
 - Script `tools/backup/backup-supabase.py` (Python 3 du Mac) : appelle `GET https://<projet>.supabase.co/rest/v1/docs?select=*` avec la clé **secret** (contourne la RLS, lecture de toutes les lignes, pagination). Écrit `~/Sauvegardes/carnet-muscu/docs-AAAA-MM-JJ.json`. Garde les 30 derniers fichiers.
 - **La clé secret n'est JAMAIS dans le dépôt** : elle est stockée dans le Trousseau macOS (`security add-generic-password -s carnet-muscu-supabase -a backup -w`), et le script la lit avec `security find-generic-password -s carnet-muscu-supabase -w`. Antoine la saisit lui-même (guider : Supabase → Project Settings → API Keys → Secret keys).
 - Planification : `launchd` (`~/Library/LaunchAgents/fr.carnetmuscu.backup.plist`), tous les jours à 3 h. Si le Mac dort à cette heure, la tâche tourne au réveil.

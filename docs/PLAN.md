@@ -9,7 +9,7 @@ Coche les cases au fur et à mesure (et ajoute une ligne au journal de `docs/SPE
 ## Reprise : où on en est (mis à jour le 2026-11-11)
 
 - **EN PRODUCTION depuis le 2026-11-11 : v2.0.0** (`master` = `sync-supabase`, commit 9ac47d2). Supabase nettoyé par Antoine (comptes de test supprimés, catalogue vidé).
-- **Reste à faire, dans l'ordre** : (1) les 3 utilisateurs créent leur compte par pseudo depuis leur téléphone ; (2) fermer les inscriptions dans Supabase ; (3) supprimer le dépôt de test et retirer son adresse des Redirect URLs (ou le garder pour les prochaines évolutions : à décider avec Antoine) ; (4) sauvegarde nocturne sur le Mac mini (étape 3) ; (5) ajustements Android.
+- **Reste à faire, dans l'ordre** : (1) les 3 utilisateurs créent leur compte par pseudo depuis leur téléphone ; (2) fermer les inscriptions dans Supabase ; (3) ~~supprimer le dépôt de test~~ : **gardé** (décision d'Antoine, 2026-11-11) pour tester les évolutions avant la production ; il utilise le même projet Supabase, donc inscriptions fermées = compte de test créé à la main (`test1@carnet-muscu.app`, voir `docs/DEPLOIEMENT.md` §4) ; (4) sauvegarde nocturne sur le Mac mini (étape 3) ; (5) ajustements Android.
 - Désormais : toute évolution se fait sur une branche, se publie d'abord en test, puis en production avec le feu vert explicite d'Antoine.
 
 - **Branche de travail** : `sync-supabase` (rien n'est sur `master` / production). Version de test publiée : **v1.16.0-sync** sur https://antoinem13.github.io/carnet-muscu-test/

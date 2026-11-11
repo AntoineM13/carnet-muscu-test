@@ -9,7 +9,7 @@ Coche les cases au fur et à mesure (et ajoute une ligne au journal de `docs/SPE
 ## Reprise : où on en est (mis à jour le 2026-11-11)
 
 - **EN PRODUCTION depuis le 2026-11-11 : v2.0.0** (`master` = `sync-supabase`, commit 9ac47d2). Supabase nettoyé par Antoine (comptes de test supprimés, catalogue vidé).
-- **Reste à faire, dans l'ordre** : (1) les 3 utilisateurs créent leur compte par pseudo depuis leur téléphone ; (2) fermer les inscriptions dans Supabase ; (3) ~~supprimer le dépôt de test~~ : **gardé** (décision d'Antoine, 2026-11-11) pour tester les évolutions avant la production ; il utilise le même projet Supabase, donc inscriptions fermées = compte de test créé à la main (`test1@carnet-muscu.app`, voir `docs/DEPLOIEMENT.md` §4) ; (4) sauvegarde nocturne sur le Mac mini (étape 3) ; (5) ajustements Android.
+- **Reste à faire, dans l'ordre** : (1) les 3 utilisateurs créent leur compte par pseudo depuis leur téléphone ; (2) fermer les inscriptions dans Supabase ; (3) ~~supprimer le dépôt de test~~ : **gardé** (décision d'Antoine, 2026-11-11) pour tester les évolutions avant la production ; il utilise le même projet Supabase, donc inscriptions fermées = compte de test créé à la main (`test1@carnet-muscu.app`, voir `docs/DEPLOIEMENT.md` §4) ; (4) ~~sauvegarde nocturne~~ : installée le 2026-11-11, à vérifier le lendemain ; (5) ajustements Android.
 - Désormais : toute évolution se fait sur une branche, se publie d'abord en test, puis en production avec le feu vert explicite d'Antoine.
 
 - **Branche de travail** : `sync-supabase` (rien n'est sur `master` / production). Version de test publiée : **v1.16.0-sync** sur https://antoinem13.github.io/carnet-muscu-test/
@@ -67,7 +67,7 @@ Antoine a des retours d'usage à transmettre. Les traiter **sur la branche `sync
 ## Étape 3 : sauvegarde nocturne sur le Mac mini
 But : le plan gratuit Supabase n'a pas de sauvegarde automatique. Chaque nuit, une copie de toute la table `docs` est enregistrée sur le Mac mini.
 
-**Codé le 2026-11-11** (`tools/backup/` : `backup-supabase.py`, `restore-supabase.py`, `install.sh`), testé contre le faux Supabase (pagination, aperçu, restauration d'un compte). Mode d'emploi : `docs/DEPLOIEMENT.md` §5. Reste : Antoine range la clé secrète dans le Trousseau, puis installation et premier essai réel. Différences avec la conception : sauvegarde aussi le catalogue (`bank`), script copié dans `~/Library/Application Support/carnet-muscu` (macOS interdit à une tâche planifiée de lire `~/Documents`).
+**Codé le 2026-11-11** (`tools/backup/` : `backup-supabase.py`, `restore-supabase.py`, `install.sh`), testé contre le faux Supabase (pagination, aperçu, restauration d'un compte). Mode d'emploi : `docs/DEPLOIEMENT.md` §5. **Installé et testé en réel le 2026-11-11** (clé dans le Trousseau, droits `service_role` ajoutés dans Supabase, 1re sauvegarde OK : 2 comptes, 15 séances). Reste : vérifier le 2026-11-12 que la tâche de 3 h a tourné (`tail ~/Sauvegardes/carnet-muscu/backup.log`). Différences avec la conception : sauvegarde aussi le catalogue (`bank`), script copié dans `~/Library/Application Support/carnet-muscu` (macOS interdit à une tâche planifiée de lire `~/Documents`).
 
 Conception d'origine :
 - Script `tools/backup/backup-supabase.py` (Python 3 du Mac) : appelle `GET https://<projet>.supabase.co/rest/v1/docs?select=*` avec la clé **secret** (contourne la RLS, lecture de toutes les lignes, pagination). Écrit `~/Sauvegardes/carnet-muscu/docs-AAAA-MM-JJ.json`. Garde les 30 derniers fichiers.
